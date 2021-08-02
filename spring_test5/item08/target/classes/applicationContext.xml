@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <bean id="myDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="jdbc:mysql://localhost:3306/bjspring" />
+        <property name="username" value="root" />
+        <property name="password" value="123" />
+    </bean>
+
+    <bean id="myFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="myDataSource"/>
+        <property name="configLocation" value="classpath:mybatis.xml"/>
+    </bean>
+
+    <bean id="myMapper" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="myFactory"/>
+        <property name="basePackage" value="com.bjpowernode.dao"/>
+    </bean>
+
+    <bean id="buyService" class="com.bjpowernode.service.impl.BuyServiceImpl">
+        <property name="saleDao" ref="saleDao"/>
+        <property name="goodsDao" ref="goodsDao"/>
+    </bean>
+
+<!--    声明事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="myDataSource"/>
+    </bean>
+
+<!--    开启注解驱动-->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+
+</beans>
